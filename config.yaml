@@ -24,18 +24,22 @@ exporters:
     verbosity: detailed
     sampling_initial: 5
     sampling_thereafter: 200
+  otlphttp:
+    endpoint: https://api.honeycomb.io
+    headers:
+      x-honeycomb-team: ${env:HONEYCOMB_API_KEY}
 
 service:
   pipelines:
     traces:
       receivers: [otlp]
       processors: [filter, batch]
-      exporters: [debug]
+      exporters: [otlphttp]
     metrics:
       receivers: [otlp]
       processors: [batch]
-      exporters: [debug]
+      exporters: [otlphttp]
     logs:
       receivers: [otlp]
       processors: [batch]
-      exporters: [debug]
+      exporters: [otlphttp]

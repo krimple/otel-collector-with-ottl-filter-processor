@@ -52,3 +52,4 @@ python3 test_phase1.py
 make clean
 ```
 Removes build artifacts, ocb binary, and Python virtual environment.
+- the REQUIREMENTS.md file contains my current working requirements. We have completed phases 1 and 2
