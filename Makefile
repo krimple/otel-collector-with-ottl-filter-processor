@@ -1,4 +1,4 @@
-.PHONY: help install-ocb build run test clean
+.PHONY: help install-ocb build run test test-phase2 clean
 
 # Detect OS
 UNAME_S := $(shell uname -s)
@@ -39,13 +39,22 @@ run: build ## Run the collector
 	@echo "Starting collector..."
 	$(COLLECTOR_BINARY) --config config.yaml
 
-test: build ## Run tests
+test: build ## Run Phase 1 tests
 	@echo "Running Phase 1 tests..."
 	@if [ ! -d venv ]; then \
 		python3 -m venv venv; \
 		. venv/bin/activate && pip install opentelemetry-api opentelemetry-sdk opentelemetry-exporter-otlp-proto-http; \
 	fi
 	@. venv/bin/activate && python3 test_phase1.py
+
+test-phase2: build ## Run Phase 2 tests (filtering by span name and duration)
+	@echo "Running Phase 2 tests..."
+	@echo "NOTE: This test takes ~94 seconds due to the 90-second 'slowme' span"
+	@if [ ! -d venv ]; then \
+		python3 -m venv venv; \
+		. venv/bin/activate && pip install opentelemetry-api opentelemetry-sdk opentelemetry-exporter-otlp-proto-http; \
+	fi
+	@. venv/bin/activate && python3 test_phase2.py
 
 clean: ## Clean build artifacts
 	@echo "Cleaning..."

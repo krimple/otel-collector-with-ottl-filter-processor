@@ -221,5 +221,5 @@ The Makefile automatically detects your platform and downloads the appropriate o
 
 See `REQUIREMENTS.md` for the phased implementation plan:
 - **Phase 1** ✅ - Basic collector with OTLP receiver and console output
-- **Phase 2** - Add filtering by span name and duration
+- **Phase 2** ✅ - Add filtering by span name and duration
 - **Phase 3** - Export to Honeycomb

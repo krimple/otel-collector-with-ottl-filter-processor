@@ -8,6 +8,16 @@ processors:
   batch:
     timeout: 1s
     send_batch_size: 1024
+  filter:
+    error_mode: ignore
+    traces:
+      span:
+        # Filter out spans with name 'filterme'
+        - 'name == "filterme"'
+        # Filter out spans with duration > 1 minute (60 seconds)
+        # Duration is calculated as end_time - start_time (both in nanoseconds)
+        # 60 seconds = 60000000000 nanoseconds
+        - '(end_time_unix_nano - start_time_unix_nano) > 60000000000'
 
 exporters:
   debug:
@@ -19,7 +29,7 @@ service:
   pipelines:
     traces:
       receivers: [otlp]
-      processors: [batch]
+      processors: [filter, batch]
       exporters: [debug]
     metrics:
       receivers: [otlp]
