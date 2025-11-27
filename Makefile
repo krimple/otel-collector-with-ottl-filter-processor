@@ -1,13 +1,21 @@
 .PHONY: help install-ocb build run test test-phase2 clean
 
-# Detect OS
+# Detect OS and Architecture
 UNAME_S := $(shell uname -s)
+UNAME_M := $(shell uname -m)
+
 ifeq ($(UNAME_S),Darwin)
 	OS := darwin
 	ARCH := arm64
 else ifeq ($(UNAME_S),Linux)
 	OS := linux
-	ARCH := amd64
+	ifeq ($(UNAME_M),aarch64)
+		ARCH := arm64
+	else ifeq ($(UNAME_M),arm64)
+		ARCH := arm64
+	else
+		ARCH := amd64
+	endif
 endif
 
 OCB_VERSION := 0.114.0

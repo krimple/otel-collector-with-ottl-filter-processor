@@ -8,12 +8,15 @@ processors:
   batch:
     timeout: 1s
     send_batch_size: 1024
-  filter:
+  filter/drop_eventstream_spans:
     error_mode: ignore
     traces:
       span:
-        # Filter out spans with name 'filterme'
-        - 'name == "filterme"'
+        - 'IsMatch(attributes["http.url"], ".*EventStream.*")'
+  filter/slowspans:
+    error_mode: ignore
+    traces:
+      span:
         # Filter out spans with duration > 1 minute (60 seconds)
         # Duration is calculated as end_time - start_time (both in nanoseconds)
         # 60 seconds = 60000000000 nanoseconds
@@ -28,18 +31,23 @@ exporters:
     endpoint: https://api.honeycomb.io
     headers:
       x-honeycomb-team: ${env:HONEYCOMB_API_KEY}
+    retry_on_failure:
+      enabled: true
+      max_elapsed_time: 300s
+    sending_queue:
+      enabled: true
+      num_consumers: 8
+      queue_size: 2000
 
 service:
   pipelines:
     traces:
       receivers: [otlp]
-      processors: [filter, batch]
+      processors: [filter/slowspans, filter/drop_eventstream_spans, batch]
       exporters: [otlphttp]
     metrics:
       receivers: [otlp]
-      processors: [batch]
       exporters: [otlphttp]
     logs:
       receivers: [otlp]
-      processors: [batch]
       exporters: [otlphttp]
